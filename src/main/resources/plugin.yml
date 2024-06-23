@@ -1,0 +1,12 @@
+name: GamesOfBebra
+version: '${project.version}'
+main: net.golda.gamesofbebra.GamesOfBebra
+api-version: '1.21'
+authors: [golda]
+
+commands:
+  game:
+    description: Основная команда для управления игрой
+    aliases:
+      - g
+    usage: /game create|start|join|settings|end

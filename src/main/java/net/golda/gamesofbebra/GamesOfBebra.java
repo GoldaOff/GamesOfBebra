@@ -4,6 +4,7 @@ import net.golda.gamesofbebra.Commands.GameCommand;
 import net.golda.gamesofbebra.Commands.GameComplete;
 import net.golda.gamesofbebra.Listeners.PlayerLeft;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
@@ -27,13 +28,14 @@ public final class GamesOfBebra extends JavaPlugin {
         log = getLogger();
         loadLang();
 
-
         //setting commands executors and tab completers
         getCommand("game").setExecutor(new GameCommand());
         getCommand("game").setTabCompleter(new GameComplete());
 
         //setting event listeners
         getServer().getPluginManager().registerEvents(new PlayerLeft(), this);
+
+        currentGame = new Game(this);
 
     }
 
@@ -79,14 +81,6 @@ public final class GamesOfBebra extends JavaPlugin {
         }
     }
 
-    public YamlConfiguration getLang() {
-        return LANG;
-    }
-
-
-    public File getLangFile() {
-        return LANG_FILE;
-    }
 
     public static boolean isGameCreated(){
         return gameStatus;
@@ -100,7 +94,5 @@ public final class GamesOfBebra extends JavaPlugin {
         return currentGame;
     }
 
-    public static void setCurrentGame(Game currentGame) {
-        GamesOfBebra.currentGame = currentGame;
-    }
+
 }

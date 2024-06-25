@@ -6,6 +6,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 public enum Lang
 {
     TITLE("title", "&4&lИгры в Бебру | "),
+    BOSS_BAR_TITLE("boss-bar-title", "&6До выдачи следующего предмета: &4%time% &6сек."),
 
     //COMMAND USAGE
 
@@ -17,6 +18,8 @@ public enum Lang
 
 
     //GAME
+
+    GAME_CHANGE_TIME("game-change-time","&6Организатор &b%player% &6изменил параметр &b\"время\" &6на &b%time% &6сек."),
     //CREATE
     GAME_CREATED("game-created", "&aИГРА СОЗДАНА. &6 Организатор >> &b%player%. &6Для подключения введите &b/game join"),
     GAME_CREATE_CANCELED("game-create-canceled", "&6Невозможно создать ещё одну игру"),

@@ -13,16 +13,14 @@ import java.util.Arrays;
 
 public class GameCommand implements CommandExecutor {
 
-    private Game currendGame;
-
     @Override
     public boolean onCommand(CommandSender Sender, Command command, String s, String[] strings) {
-
         if(!(Sender instanceof Player)){
             return false;
         }
+        Game currendGame = GamesOfBebra.getCurrentGame();
         Player player = ((Player) Sender).getPlayer();
-        String type;
+        int time = 15;
         String settingType;
         String settingValue;
         try{
@@ -31,9 +29,12 @@ public class GameCommand implements CommandExecutor {
                     //GAME IS NOT STARTED
                     if(!GamesOfBebra.isGameCreated()){
                         GamesOfBebra.setGameCreated(true);
-                        currendGame = new Game(player);
-                        GamesOfBebra.setCurrentGame(currendGame);
+                        GamesOfBebra.getCurrentGame().setOwner(player);
                         Bukkit.broadcastMessage(Lang.TITLE.toString()+Lang.GAME_CREATED.toString().replace("%player%", Sender.getName()));
+                        if (strings.length>1){
+                            time = Integer.parseInt(strings[1]);
+                            Bukkit.broadcastMessage(Lang.GAME_CHANGE_TIME.toString().replace("%player%", player.getName()).replace("%time%", String.valueOf(time)));
+                        }
                     }
                     //GAME STARTED
                     else {
@@ -94,7 +95,11 @@ public class GameCommand implements CommandExecutor {
                         if (currendGame.isOwner(player)){
                             if (currendGame.canStart_players()){
                                 if (!currendGame.isStarted()){
-                                    currendGame.startGame();
+                                    if (strings.length>1){
+                                        time = Integer.parseInt(strings[1]);
+                                        Bukkit.broadcastMessage(Lang.TITLE+Lang.GAME_CHANGE_TIME.toString().replace("%player%", player.getName()).replace("%time%", String.valueOf(time)));
+                                    }
+                                    currendGame.startGame(time);
                                     Bukkit.broadcastMessage(Lang.TITLE.toString()+Lang.GAME_START);
                                 }
                                 else {
@@ -114,7 +119,6 @@ public class GameCommand implements CommandExecutor {
                     break;
 
                 case "settings":
-                    type="settings";
                     break;
 
                 default:

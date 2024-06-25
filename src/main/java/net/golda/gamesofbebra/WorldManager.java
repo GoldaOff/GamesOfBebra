@@ -1,6 +1,8 @@
 package net.golda.gamesofbebra;
 
 import org.bukkit.*;
+import org.bukkit.entity.Damageable;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
 import java.io.File;
@@ -19,11 +21,22 @@ public class WorldManager {
     private ArrayList<Player> currentPlayers = new ArrayList<>();
 
     public void clear() {
-        for (Location location: locations){
-            location.getBlock().setType(Material.AIR);
-        }
         locations.clear();
         playersLocations.clear();
+        players.clear();
+        currentPlayers.clear();
+
+        for (int x = -15; x < 21; x++){
+            for (int z = -18; z < 18; z++){
+                for (int y = 120; y > 80; y--){
+                    world.getBlockAt(x, y, z).setType(Material.AIR);
+                }
+            }
+        }
+
+        for (Entity entity: world.getEntities()){
+            if (!(entity instanceof Player) & entity instanceof Damageable) ((Damageable) entity).damage(100000);
+        }
     }
 
 
@@ -59,6 +72,9 @@ public class WorldManager {
         worldCreator.type(WorldType.FLAT);
         worldCreator.generatorSettings("{\"layers\": [{\"block\": \"stone\", \"height\": 0}, {\"block\": \"grass_block\", \"height\": 0}], \"biome\":\"plains\"}");
         world = worldCreator.createWorld();
+        world.getWorldBorder().setSize(35);
+        world.getWorldBorder().setCenter(new Location(world, 3, 0,0));
+        world.setTime(4000);
     }
 
     private void calculateLocations(int players){

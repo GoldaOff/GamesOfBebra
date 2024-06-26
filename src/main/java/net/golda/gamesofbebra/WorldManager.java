@@ -58,6 +58,10 @@ public class WorldManager {
         }
     }
 
+    public void teleportToWorld(Player player){
+        player.teleport(new Location(world, 0, 120, 0));
+    }
+
     private void randomizeLocations() {
         Collections.shuffle(locations);
         for(int i =0; i<players.size(); i++){

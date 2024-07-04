@@ -2,6 +2,7 @@ package net.golda.gamesofbebra;
 
 import net.golda.gamesofbebra.Commands.GameCommand;
 import net.golda.gamesofbebra.Commands.GameComplete;
+import net.golda.gamesofbebra.Listeners.PlayerDamaged;
 import net.golda.gamesofbebra.Listeners.PlayerDied;
 import net.golda.gamesofbebra.Listeners.PlayerLeft;
 import net.golda.gamesofbebra.Listeners.PlayerRespawned;
@@ -36,8 +37,9 @@ public final class GamesOfBebra extends JavaPlugin {
 
         //setting event listeners
         getServer().getPluginManager().registerEvents(new PlayerLeft(), this);
-        getServer().getPluginManager().registerEvents(new PlayerDied(), this);
+        //getServer().getPluginManager().registerEvents(new PlayerDied(), this);
         getServer().getPluginManager().registerEvents(new PlayerRespawned(), this);
+        getServer().getPluginManager().registerEvents(new PlayerDamaged(), this);
 
         currentGame = new Game(this);
 

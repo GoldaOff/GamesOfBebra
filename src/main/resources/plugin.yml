@@ -9,4 +9,4 @@ commands:
     description: Основная команда для управления игрой
     aliases:
       - g
-    usage: /game create|start|join|settings|end
+    usage: /game create|start|join|end

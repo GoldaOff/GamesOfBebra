@@ -16,7 +16,10 @@ public class PlayerDied implements Listener {
                     Game game = GamesOfBebra.getCurrentGame();
                     Player player = (Player) entityDeathEvent.getEntity();
                     if (game.isJoined(player)){
-                        if (game.isCurrentPlayer(player)) game.dropPlayer(player);
+                        if (game.isCurrentPlayer(player)) {
+                            player.spigot().respawn();
+                            game.dropPlayer(player);
+                        }
                         }
                     }
                 }

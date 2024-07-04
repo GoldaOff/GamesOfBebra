@@ -1,20 +1,18 @@
 package net.golda.gamesofbebra;
 
-import org.bukkit.Bukkit;
-import org.bukkit.GameMode;
-import org.bukkit.Location;
-import org.bukkit.Material;
+import org.bukkit.*;
 import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarStyle;
 import org.bukkit.boss.BossBar;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.potion.PotionEffect;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+
 
 
 public class Game {
@@ -22,10 +20,14 @@ public class Game {
     private ArrayList<Player> players = new ArrayList<>();
     private ArrayList<Player> currentPlayers = new ArrayList<>();
     private ArrayList<Player> lastPlayers = new ArrayList<>();
-    private HashMap<Player, Location> playersLocations = new HashMap<>();
+    private HashMap<Player, Location[]> playersLocations = new HashMap<>();
     private HashMap<Player, ItemStack[][]> playersInventories = new HashMap<>();
+    private HashMap<Player, Double> playersHealth = new HashMap<>();
+    private HashMap<Player, Integer> playersHunger = new HashMap<>();
     private HashMap<Player, Integer> playersLevels = new HashMap<>();
     private HashMap<Player, Float> playersXP = new HashMap<>();
+    private HashMap<Player, Collection<PotionEffect>> playersEffects = new HashMap<>();
+
     private final Material[] materials = Material.values();
     private Player owner;
     private WorldManager worldManager = new WorldManager();
@@ -49,6 +51,9 @@ public class Game {
         addPlayersToBossBar();
         currentPlayers.addAll(players);
         bar.setProgress(1.0);
+        startTimer();
+
+
         givePlayersRandomItems();
         new BukkitRunnable(){
             @Override
@@ -59,7 +64,28 @@ public class Game {
                     timerStep();
                 }
             }
+        }.runTaskTimer(plugin, 20*3, 20);
+    }
+
+    private void startTimer() {
+        new BukkitRunnable(){
+            @Override
+            public void run() {
+                if (step==0) cancel();
+                makeTimerStep();
+            }
         }.runTaskTimer(plugin, 0, 20);
+    }
+    int step = 3;
+    private void makeTimerStep() {
+       for (Player player: players){
+           player.sendTitle(ChatColor.translateAlternateColorCodes ('&',"&4"+String.valueOf(step)), "", 2, 16, 2);
+           if (step==0){
+                player.setWalkSpeed(0.2F);
+           }
+       }
+        step--;
+
     }
 
     public void endGame(){
@@ -70,6 +96,17 @@ public class Game {
         bar.removeAll();
         players.clear();
         currentPlayers.clear();
+        step=3;
+    }
+
+    private void restoreInventories() {
+        for (Map.Entry<Player, ItemStack[][]> entry : playersInventories.entrySet()){
+            Player player = entry.getKey();
+            ItemStack[][] itemStacks = entry.getValue();
+            player.getInventory().setContents(itemStacks[0]);
+            player.getInventory().setArmorContents(itemStacks[1]);
+        }
+        playersInventories.clear();
     }
 
     public void timerStep(){
@@ -90,11 +127,24 @@ public class Game {
     public void dropPlayer(Player player){
         currentPlayers.remove(player);
         player.setGameMode(GameMode.SPECTATOR);
-        worldManager.teleportToWorld(player);
+        Bukkit.broadcastMessage(Lang.TITLE.toString()+Lang.GAME_PLAYER_DIED.toString().replace("%player%", player.getName()));
+        restoreInventory(player);
 
         if (currentPlayers.size()==1){
+            isStarted = false;
+            bar.setProgress(1);
+            bar.setTitle(Lang.BOSS_BAR_ENDGAME.toString());
             Bukkit.broadcastMessage(Lang.TITLE.toString()+Lang.GAME_END.toString().replace("%player%", currentPlayers.get(0).getName()));
-            endGame();
+            currentPlayers.get(0).setGameMode(GameMode.SPECTATOR);
+            currentPlayers.get(0).teleport(new Location(currentPlayers.get(0).getWorld(), 0, 120, 0));
+            new BukkitRunnable(){
+                @Override
+                public void run() {
+                    endGame();
+                }
+            }.runTaskLater(plugin, 20*5);
+
+
         }
 
     }
@@ -139,10 +189,25 @@ public class Game {
         saveInventories();
         saveLevels();
         saveXP();
+        saveHH();
+        saveEffects();
+    }
+    private void saveEffects() {
+        for (Player player: players){
+            Collection<PotionEffect> effects = player.getActivePotionEffects();
+            playersEffects.put(player, effects);
+            for (PotionEffect potionEffect: effects) player.removePotionEffect(potionEffect.getType());
+        }
+    }
+    private void saveHH() {
+        for (Player player: players){
+            playersHealth.put(player, player.getHealth());
+            playersHunger.put(player, player.getFoodLevel());
+        }
     }
     private void saveLocations(){
         for (Player player: players){
-            playersLocations.put(player, player.getLocation());
+            playersLocations.put(player, new Location[]{player.getLocation(), player.getRespawnLocation()});
         }
     }
     private void saveInventories(){
@@ -170,11 +235,38 @@ public class Game {
     private void applyPlayersInfo(){
         backPlayersToLocations();
         playersLocations.clear();
-        restoreInventories();
         restoreXP();
         playersXP.clear();
         restoreLevels();
         playersLevels.clear();
+        restoreHH();
+        playersHealth.clear();
+        playersHunger.clear();
+        restoreInventories();
+        restoreEffects();
+        playersEffects.clear();
+    }
+
+    private void restoreEffects() {
+        for (Map.Entry<Player, Collection<PotionEffect>> entry: playersEffects.entrySet()){
+            Player player = entry.getKey();
+            Collection<PotionEffect> currentEffects = player.getActivePotionEffects();
+            for (PotionEffect potionEffect: currentEffects) player.removePotionEffect(potionEffect.getType());
+            Collection<PotionEffect> effects = entry.getValue();
+            for (PotionEffect effect: effects) player.addPotionEffect(effect);
+        }
+    }
+    private void restoreHH() {
+        for (Map.Entry<Player, Double> entry: playersHealth.entrySet()){
+            Player player = entry.getKey();
+            Double health = entry.getValue();
+            player.setHealth(health);
+        }
+        for (Map.Entry<Player, Integer> entry: playersHunger.entrySet()){
+            Player player = entry.getKey();
+            Integer hunger = entry.getValue();
+            player.setFoodLevel(hunger);
+        }
     }
     private void restoreLevels() {
         for(Map.Entry<Player, Integer> entry: playersLevels.entrySet()){
@@ -190,12 +282,6 @@ public class Game {
             player.setExp(exp);
         }
     }
-    private void restoreInventories() {
-        for (Player player: players){
-            if (!player.isDead()) restoreInventory(player);
-            else lastPlayers.add(player);
-        }
-    }
     public void restoreInventory(Player player){
         ItemStack[][] itemStacks = playersInventories.get(player);
         player.getInventory().setContents(itemStacks[0]);
@@ -203,10 +289,11 @@ public class Game {
         playersInventories.remove(player);
     }
     private void backPlayersToLocations() {
-        for (Map.Entry<Player, Location> entry: playersLocations.entrySet()){
+        for (Map.Entry<Player, Location[]> entry: playersLocations.entrySet()){
             Player player = entry.getKey();
-            Location location = entry.getValue();
-            player.teleport(location);
+            Location[] location = entry.getValue();
+            player.teleport(location[0]);
+            player.setRespawnLocation(location[1]);
             player.setGameMode(GameMode.SURVIVAL);
         }
     }
@@ -225,14 +312,16 @@ public class Game {
         }
     }
 
-
     //RANDOM ITEM
     private void givePlayersRandomItems(){
         for (Player player: currentPlayers){
-            Material material = getRandomMaterial();
-            while (!material.isItem()) material = getRandomMaterial();
-            player.getInventory().setItem(player.getInventory().firstEmpty(), material.asItemType().createItemStack());
+            try{
+                Material material = getRandomMaterial();
+                while (!material.isItem()) material = getRandomMaterial();
+                player.getInventory().setItem(player.getInventory().firstEmpty(), material.asItemType().createItemStack());
+            } catch (Exception ex) {player.sendMessage(Lang.TITLE.toString()+Lang.GAME_CANT_GIVE);}
         }
+
 
     }
     private Material getRandomMaterial(){

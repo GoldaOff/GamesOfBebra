@@ -7,19 +7,13 @@ public enum Lang
 {
     TITLE("title", "&4&lИгры в Бебру | "),
     BOSS_BAR_TITLE("boss-bar-title", "&6До выдачи следующего предмета: &4%time% &6сек."),
-
-    //COMMAND USAGE
-
-    //WRONG USAGE
+    BOSS_BAR_ENDGAME("boss-bar-end", "&aИгра окончена"),
     CMD_WRONG_USAGE("cmd-wrong-usage", "&6Неправильное использование команды"),
-    //USAGE
-    CMD_USAGE("cmd-usage","&6/game &ecreate | join | start | settings | end | "),
-    CMD_USAGE_SETTINGS("cmd-usage-settings", "&6/game &esettings &f<arg> &a<value>"),
-
-
+    CMD_USAGE("cmd-usage","&6/game &ecreate | join | start | end | "),
     //GAME
     GAME_PLAYER_DIED("game-player-died", "&6Игрок &b%player% &6выбыл из игры"),
     GAME_CHANGE_TIME("game-change-time","&6Параметр &b\"время\" &6изменён на &b%time% &6сек."),
+    GAME_CANT_GIVE("game-cant-give", "&6Нет доступных слотов для выдачи предмета"),
     //CREATE
     GAME_CREATED("game-created", "&aИГРА СОЗДАНА. &6 Организатор >> &b%player%. &6Для подключения введите &b/game join"),
     GAME_CREATE_CANCELED("game-create-canceled", "&6Невозможно создать ещё одну игру"),

@@ -1,6 +1,8 @@
 package net.golda.gamesofbebra.Listeners;
 
 import net.golda.gamesofbebra.GamesOfBebra;
+import net.golda.gamesofbebra.WorldManager;
+import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerRespawnEvent;

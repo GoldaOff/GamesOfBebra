@@ -20,7 +20,7 @@ public class GameCommand implements CommandExecutor {
         }
         Game currendGame = GamesOfBebra.getCurrentGame();
         Player player = ((Player) Sender).getPlayer();
-        int time = 15;
+        int time = 10;
         String settingType;
         String settingValue;
         try{
@@ -118,17 +118,18 @@ public class GameCommand implements CommandExecutor {
 
                     break;
 
-                case "settings":
-                    break;
-
                 default:
-                    return false;
+                    player.sendMessage(Lang.TITLE.toString()+Lang.CMD_WRONG_USAGE);
+                    player.sendMessage(Lang.CMD_USAGE.toString());
+                    return true;
             }
 
             return true;
 
         }
         catch (Exception e){
+            player.sendMessage(Lang.TITLE.toString()+Lang.CMD_WRONG_USAGE);
+            player.sendMessage(Lang.CMD_USAGE.toString());
             System.out.println(e.toString());
             System.out.print(Arrays.toString(e.getStackTrace()));
             return false;

@@ -36,7 +36,14 @@ public enum Lang
     GAME_END_PLAYER_LEFT("game-end-player-left", "&aИГРА ОКОНЧЕНА. &6Игрок &b%player% &6покинул игру"),
     GAME_END_CANCELED("game-end-canceled", "&6Лол заканчивать-то нечего"),
     GAME_END_CANCELED_NOT_OWNER("game-end-canceled-not-owner", "&6Вы не можете закончить эту игру"),
-    GAME_END("game-end","&aИГРА ОКОНЧЕНА. &6Победитель >> &b%player%");
+    GAME_END("game-end","&aИГРА ОКОНЧЕНА. &6Победитель >> &b%player%"),
+
+    //GAME LEAVE
+    GAME_PLAYER_LEAVE("game-player-leave","Чупик ливнул домой"),
+    GAME_PLAYER_CANT_LEAVE_NOT_IN_GAME("game-player-cant-leave-not-in-game","Ты не в игре"),
+    GAME_CANT_LEAVE_EARLY("game-cant-leave-early", "Сначала умри потом можешь ливать");
+
+
 
     private String path;
     private String def;

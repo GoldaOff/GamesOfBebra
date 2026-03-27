@@ -118,6 +118,12 @@ public class GameCommand implements CommandExecutor {
 
                     break;
 
+                case "leave":
+                    if (!GamesOfBebra.isGameCreated()) {player.sendMessage(Lang.TITLE.toString()+Lang.GAME_PLAYER_CANT_LEAVE_NOT_IN_GAME);}
+                    else if (!currendGame.isJoined(player)) {player.sendMessage(Lang.TITLE.toString()+Lang.GAME_PLAYER_CANT_LEAVE_NOT_IN_GAME);}
+
+
+                    break;
                 default:
                     player.sendMessage(Lang.TITLE.toString()+Lang.CMD_WRONG_USAGE);
                     player.sendMessage(Lang.CMD_USAGE.toString());

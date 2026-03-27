@@ -15,7 +15,8 @@ public class GameComplete implements TabCompleter {
           "start",
           "join",
           "end",
-          "settings"
+          "settings",
+          "leave"
         );
 
         return null;

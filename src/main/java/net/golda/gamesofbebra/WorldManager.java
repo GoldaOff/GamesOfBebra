@@ -26,8 +26,8 @@ public class WorldManager {
         players.clear();
         currentPlayers.clear();
 
-        for (int x = -25; x < 25; x++){
-            for (int z = -25; z < 25; z++){
+        for (int x = -35; x < 35; x++){
+            for (int z = -35; z < 35; z++){
                 for (int y = 180; y > 80; y--){
                     world.getBlockAt(x, y, z).setType(Material.AIR);
                 }
